@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lesson and Attendance</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+ <!-- 커스텀 CSS -->
+ <style>
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 48px,1rem;
+      background-color: #f8f9fa;
+    }
+  
+    .sidebar-sticky {
+      position: -webkit-sticky; /* For Safari */
+      position: sticky; 
+      top:48px; 
+    }
+    
+    .nav-link.active {
+        font-weight:bold; 
+    }
+    
+   /* Add this to make the navbar vertical */
+   @media (min-width:768px){
+     .sidebar{
+       width:auto !important;
+     }
+   }
+  
+  </style>     
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+          <nav id ="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="sidebar-sticky pt-3">
+              <ul class= "nav flex-column">    
+                <li>
+                  <a class = "navbar-brand" href="/">홈으로</a>
+                </li>
+           
+                <li class="{% if 'student_list' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="student_list.html">학생 정보  </a>
+                </li>
+                
+                <li class="{% if 'subject_list' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="subject_list.html">과정 정보  </a>
+                </li>
+                
+                <li class="{% if 'subject_list_detail' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="subject_list_detail.html">과정 상세  </a>
+                </li>
+                
+                <li class="{% if 'lesson_list' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="lesson_list.html">수업 리스트</a>
+                </li>
+    
+              </ul> 
+            </div> 
+          </nav>
+      </div>
+    </div>  
+<div class="container mt-5">
+    <h1 class="mb-4">수업 기록 등록</h1>
+
+    <!-- Lesson Form -->
+    <form id="lessonForm" method="POST">
+        <div class="form-group">
+          <div style="display: flex;">
+            <div style="flex: 3;">
+              <label for='studentId'>학생:</label>
+              <select id='studentId' name='student_id' class='form-control'></select> 
+              학년: <span id='gradeLevel'></span><br/>
+            </div>
+            <div style="flex: 7;">
+              <label for='subjectDetailId'>상세 과정:</label>
+              <select id='subjectDetailId' name='subject_detail_id' class='form-control'></select> 
+              과정: <span id='subjectName'></span><br/>
+            </div>
+          </div>
+            
+
+             <!-- Input fields for lesson details, teacher comments and etc -->
+             수업 내용: 
+             <textarea name= 'lesson_detail' rows = "5" class = "form-control"></textarea><br/>
+             
+             교사 메모:
+             <textarea name= 'teach_comment' rows = "5" class = "form-control"></textarea><br/>
+
+              기타사항:
+              <textarea name= 'etc' rows = "5" class = "form-control"></textarea><br/>
+        </div> 
+        <div class= "button-container text-right mt-3">
+           <!-- Submit button for the form -->
+           <button type=submit class ="btn btn-primary">Add Lesson</button> 
+        </div>
+   </form>
+
+<!-- jQuery and Bootstrap.js -->
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="/static/lesson.js"></script>
+
+</body></html>

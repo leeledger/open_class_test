@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lesson and Attendance</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+ <!-- 커스텀 CSS -->
+ <style>
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 48px,1rem;
+      background-color: #f8f9fa;
+    }
+  
+    .sidebar-sticky {
+      position: -webkit-sticky; /* For Safari */
+      position: sticky; 
+      top:48px; 
+    }
+    
+    .nav-link.active {
+        font-weight:bold; 
+    }
+    
+   /* Add this to make the navbar vertical */
+   @media (min-width:768px){
+     .sidebar{
+       width:auto !important;
+     }
+   }
+  
+  </style>     
+</head>
+<body>
+<div class="container-fluid">
+        <div class="row">
+          <nav id ="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="sidebar-sticky pt-3">
+              <ul class= "nav flex-column">    
+                <li>
+                  <a class = "navbar-brand" href="/">홈으로</a>
+                </li>
+           
+                <li class="{% if 'student_list' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="student_list.html">학생 정보  </a>
+                </li>
+                
+                <li class="{% if 'subject_list' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="subject_list.html">과정 정보  </a>
+                </li>
+
+<!-- Add the active state for subject_detail_list page as well -->
+<li class="{% if 'subject_detail_list' in currentPage or 'lesson_update' in currentPage %}active{% endif %}">
+                    <!-- Change the link to subject_detail_list.html -->
+                    <!-- Also, pass any necessary parameters through the URL if needed -->
+                    <!-- Example with student_id parameter:
+                         href="/subject_detail_list?student_id={{ student_id }}"
+                         Replace {{ student_id }} with actual value from your backend
+                     -->
+                    <!-- Example with subject_id parameter:
+                         href="/subject_detail_list?subject_id={{ subject_id }}"
+                         Replace {{ subject_id }} with actual value from your backend
+                     -->
+                    <!-- You can add more parameters as needed -->
+
+<a class = "navbar-brand" href="subject_detail_list.html">과정 상세</a>
+
+<!-- End of modified code -->
+
+</li>
+
+<!-- Add the active state for lesson_list page as well -->
+
+<li class="{% if 'lesson_list' in currentPage or 'lesson_update' in currentPage %}active{% endif %}">
+                    <!-- Change the link to lesson_list.html -->
+                    <!-- Also, pass any necessary parameters through the URL if needed -->
+                    
+<a class = "navbar-brand" href="lesson_list.html">수업 리스트</a>
+
+<!-- End of modified code -->
+
+</li>
+
+              </ul> 
+            </div> 
+          </nav>
+
+
+<div id='mainContent' role='main'>
+<div id='content'>
+<div id='content-inner'>
+
+<!-- Add a container for the lesson form -->
+
+<div id='form-container'>
+<h1>수업 기록 등록</h1>
+
+<form id='lessonForm' method='POST'>
+<!-- Rest of your form code goes here -->
+

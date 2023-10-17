@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>과정 상세</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+<!-- 커스텀 CSS -->
+<style>
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 48px,1rem;
+    background-color: #f8f9fa;
+  }
+
+  .sidebar-sticky {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky; 
+    top:48px; 
+  }
+  
+  .nav-link.active {
+      font-weight:bold; 
+  }
+  
+ /* Add this to make the navbar vertical */
+ @media (min-width:768px){
+   .sidebar{
+     width:auto !important;
+   }
+ }
+
+</style>  
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <nav id ="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="sidebar-sticky pt-3">
+          <ul class= "nav flex-column">    
+            <li>
+              <a class = "navbar-brand" href="/">홈으로</a>
+            </li>
+       
+            <li class="{% if 'student_list' in currentPage %}active{% endif %}">
+                <a class = "navbar-brand" href="student_list.html">학생 정보  </a>
+            </li>
+            
+            <li class="{% if 'subject_list' in currentPage %}active{% endif %}">
+                <a class = "navbar-brand" href="subject_list.html">과정 정보  </a>
+            </li>
+            
+            <li class="{% if 'subject_list_detail' in currentPage %}active{% endif %}">
+                <a class = "navbar-brand" href="subject_list_detail.html">과정 상세  </a>
+            </li>
+            
+            <li class="{% if 'lesson_list' in currentPage %}active{% endif %}">
+                <a class = "navbar-brand" href="lesson_list.html">수업 리스트</a>
+            </li>
+
+          </ul> 
+        </div> 
+      </nav>
+  </div>
+</div>  
+<div class="container mt-5">
+    <h1 class="mb-4">과정 상세</h1>
+
+    <table id="subjectdetailTable" class="table table-striped table-bordered" style="width:100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>과정</th>
+          <th>상세 설명</th>
+          <th>레벨</th>
+        </tr>
+      </thead>
+
+      <!-- 각 과정 상세 정보 출력 -->
+      {% for subjectdetail in subjectdetails %}
+      <tr>
+        <!-- 아래 줄에서 subjectdetail.subject_detail_id을 클릭하면 해당 과목 상세의 정보 수정 페이지로 이동합니다 -->
+        <td>{{ subjectdetail.subject_detail_id }}</a></td>
+    
+        <!-- 아래 줄에서 subjectdetail.subject.name을 출력하여 해당 과목의 이름을 보여줍니다 -->
+        <td>{{ subjectdetail.subject.name if subjectdetail.subject else 'N/A' }}</td>
+    
+        <!-- detail_script와 level 정보 출력 -->
+        <td><a href="{{ url_for('subject_detail_update_move', subject_detail_id=subjectdetail.subject_detail_id) }}">{{ subjectdetail.detail_script }}</a></td>
+        <td>{{ subjectdetail.level }}</td>
+      </tr>
+    {% endfor %}
+    </table>
+
+    <!-- 홈으로 돌아가기 링크 -->
+    &nbsp;&nbsp;<a href="/">홈으로 돌아가기</a> &nbsp;&nbsp;<a href="/subject_detail.html">입력</a>
+
+</div>
+
+
+<!-- jQuery, Bootstrap.js and DataTables.js -->
+<script src= "https://code.jquery.com/jquery-3.3.1.slim.min.js"></script> 
+<script src= "//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+
+<script type='text/javascript'>
+// JavaScript 코드
+
+$(document).ready(function() {
+   $('#subjectdetailTable').DataTable();
+} );
+  
+// 위 코드는 페이지 로딩 완료 후에 실행되며, DataTables 라이브러리를 초기화합니다.
+// 이로써 테이블의 각 열을 클릭하면 해당 열 기준으로 정렬되는 등의 추가 기능을 사용할 수 있습니다.
+
+</script>
+
+
+</body></html >
