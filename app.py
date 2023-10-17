@@ -259,7 +259,7 @@ def edit_subject(subject_id):
     # 가져온 학생 정보를 가지고 'subject.html' 템플릿으로 이동
     return render_template('subject.html', subject=subject)
 
-
+    # 브랜치 테스트
 
 @app.route('/subject-detail-update-move/<int:subject_detail_id>')
 def subject_detail_update_move(subject_detail_id):
