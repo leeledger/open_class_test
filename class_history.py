@@ -597,4 +597,4 @@ app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run('0.0.0.0', port=5050)
