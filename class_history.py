@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request,jsonify
+from flask import Flask, render_template, request,jsonify,redirect,url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import and_, or_
@@ -417,7 +417,7 @@ def lesson_update_move(lessonId):
     lesson_detail = Lesson.query.get(lessonId)
     subject_detail = SubjectDetail.query.all()
     attendance = Attendance.query.filter_by(lesson_id=lessonId).first()
-
+    subject_name = Subject.name
     if not attendance:
         return "Attendance not found", 404
     student = Student.query.get(attendance.student_id)
@@ -427,8 +427,9 @@ def lesson_update_move(lessonId):
 
     if not lesson_detail:
         return "SubjectDetail not found", 404  # 적절한 에러 메시지와 함께 404 상태 코드 반환
-    # return redirect(url_for('lesson_update', lesson_id=lessonId))
-    return render_template('lesson_update.html', lesson_detail=lesson_detail, subject_detail=subject_detail, student_name=student.name)
+    
+    return render_template('lesson_update.html', lesson_detail=lesson_detail, subject_detail=subject_detail, student_name=student.name, subject_name = subject_name) #정상작동
+    
 
 @app.route('/api/add_lessons', methods=['POST'])
 def add_lesson():
@@ -565,31 +566,55 @@ def lesson_search():
         ])
         
 # 수업정보 업데이트
-@app.route('/lesson_update.html/<int:lesson_id>', methods=['PUT'])
-def update_lesson(lesson_id):
+@app.route('/lesson-update/<int:lessonId>', methods=['PUT'])
+def lesson_update(lessonId):
     # 요청에서 전달된 데이터 가져오기
     data = request.get_json()
     
     # 데이터베이스에서 해당 수업 조회
-    lesson = Lesson.query.get(lesson_id)
+    lesson = Lesson.query.get(lessonId)
 
     if not lesson:
         return jsonify({'message': 'Lesson not found'}), 404
     
-    # 전달받은 데이터로 수업 정보 업데이트
-    lesson.subject_detail_id = data['subject_detail_id']
-    lesson.lesson_detail = data['lesson_detail']
-    lesson.teach_comment= data['teach_comment']
-    lesson.etc= data['etc']
+    try:
+        # 전달받은 데이터로 수업 정보 업데이트
+        # lesson.lesson_id = data['lesson_id']
+        lesson.subject_detail_id = data['subject_detail_id']
+        lesson.lesson_detail = data['lesson_detail']
+        lesson.teach_comment = data['teach_comment']
+        lesson.etc = data['etc']
 
-    # 변경 사항 커밋
-    db.session.commit()
+        # 변경 사항 커밋
+        db.session.commit()
+
+        # 성공적으로 수정되었다고 가정하고 응답 생성
+        return "Success"
+    except Exception as e:
+        # 커밋 중에 오류 발생 시 오류 메시지 반환
+        return jsonify({'message': str(e)}), 500
 
     # 성공적으로 수정되었다고 가정하고 응답 생성
-    response = {'message': 'Success'}
     
-    return jsonify(response), 200
+# /lesson-delete/
+@app.route('/lesson-delete/<int:lessonId>', methods=['POST'])
+def lesson_delete(lessonId): 
+    lesson = Lesson.query.get(lessonId)
+        
+    if not lesson:
+        return "Lesson not found", 404
+    try:
+        # 동일 lesson_id를 가진 Attendance 항목 삭제
+        attendance_entries = Attendance.query.filter_by(lesson_id=lessonId).all()
+        for attendance_entry in attendance_entries:
+            db.session.delete(attendance_entry)
 
+        db.session.delete(lesson)
+        db.session.commit()
+        return "Success"  
+    
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -597,4 +622,4 @@ app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run('0.0.0.0', port=5050)
