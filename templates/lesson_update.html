@@ -124,7 +124,7 @@
   {% for subject in subject_detail %}
   var option = document.createElement("option");
   option.value = '{{ subject.subject_detail_id }}';
-  option.text = '{{ subject.subject_name }} {{ subject.detail_script }}';
+  option.text = '{{ subject.subject_name }} {{ subject.detail_script }} {{subject.level}}';
 
   // 현재 선택된 항목인 경우 selected 속성 추가
   if ('{{ subject.subject_detail_id }}' === '{{ lesson_detail.subject_detail_id }}') {
