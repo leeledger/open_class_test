@@ -142,13 +142,7 @@
 
 <script type='text/javascript'>
   $(document).ready(function() {
-    $('#lessonTable').on('click', 'tbody td:nth-child(4)', function() {
-      var lessonId = $(this).closest('tr').find('.lesson-id').text();
-      var subjectDetail = $(this).text();
-      
-      // 페이지 이동 및 데이터 전달
-      window.location.href = '/lesson_update?lesson_id=' + lessonId + '&subject_detail=' + encodeURIComponent(subjectDetail);
-    });
+
       // 학생 이름 클릭 시 이벤트 처리
   $('#lessonTable').on('click', '.student-name', function() {
     var lessonId = $(this).closest('tr').find('.lesson-id').text();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Lesson and Attendance</title>
+    <title>수업 기록 수정</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -36,7 +36,7 @@
   </style>     
 </head>
 <body>
-<div class="container-fluid">
+    <div class="container-fluid">
         <div class="row">
           <nav id ="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
             <div class="sidebar-sticky pt-3">
@@ -52,53 +52,94 @@
                 <li class="{% if 'subject_list' in currentPage %}active{% endif %}">
                     <a class = "navbar-brand" href="subject_list.html">과정 정보  </a>
                 </li>
-
-<!-- Add the active state for subject_detail_list page as well -->
-<li class="{% if 'subject_detail_list' in currentPage or 'lesson_update' in currentPage %}active{% endif %}">
-                    <!-- Change the link to subject_detail_list.html -->
-                    <!-- Also, pass any necessary parameters through the URL if needed -->
-                    <!-- Example with student_id parameter:
-                         href="/subject_detail_list?student_id={{ student_id }}"
-                         Replace {{ student_id }} with actual value from your backend
-                     -->
-                    <!-- Example with subject_id parameter:
-                         href="/subject_detail_list?subject_id={{ subject_id }}"
-                         Replace {{ subject_id }} with actual value from your backend
-                     -->
-                    <!-- You can add more parameters as needed -->
-
-<a class = "navbar-brand" href="subject_detail_list.html">과정 상세</a>
-
-<!-- End of modified code -->
-
-</li>
-
-<!-- Add the active state for lesson_list page as well -->
-
-<li class="{% if 'lesson_list' in currentPage or 'lesson_update' in currentPage %}active{% endif %}">
-                    <!-- Change the link to lesson_list.html -->
-                    <!-- Also, pass any necessary parameters through the URL if needed -->
-                    
-<a class = "navbar-brand" href="lesson_list.html">수업 리스트</a>
-
-<!-- End of modified code -->
-
-</li>
-
+                
+                <li class="{% if 'subject_list_detail' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="subject_list_detail.html">과정 상세  </a>
+                </li>
+                
+                <li class="{% if 'lesson_list' in currentPage %}active{% endif %}">
+                    <a class = "navbar-brand" href="lesson_list.html">수업 리스트</a>
+                </li>
+    
               </ul> 
             </div> 
           </nav>
+      </div>
+    </div>  
+<div class="container mt-5">
+    <h1 class="mb-4">수업 기록 수정</h1>
 
+    <!-- Lesson Form -->
+    <form id="lessonForm" method="POST">
+        <div class="form-group">
+          <div style="display: flex;">
+            <div style="flex: 3;">
+              <label for='studentId'>학생:</label>
+              <input type='text' id='studentName' name='student_name' class='form-control' value="{{ student_name }}" readonly> 
+              학년: <span id='gradeLevel'></span><br/>
+            </div>
+            <div style="flex: 7;">
+              <label for='subjectDetailId'>상세 과정:</label>
+              <select id='subjectDetailId' name='subject_detail_id' class='form-control'></select> 
+              과정: <span id='subjectName'></span><br/>
+            </div>
+          </div>
+            
 
-<div id='mainContent' role='main'>
-<div id='content'>
-<div id='content-inner'>
+             <!-- Input fields for lesson details, teacher comments and etc -->
+             수업 내용:
+             <textarea id = 'lesson_detail' name= 'lesson_detail' rows = "5" class = "form-control"></textarea><br/>
+     
+             교사 메모:
+             <textarea id = 'teach_comment' name= 'teach_comment' rows = "5" class = "form-control"></textarea><br/>
+     
+             기타사항:
+             <textarea id ='etc' name= 'etc' rows = "5" class = "form-control"></textarea><br/>
+        </div> 
+        <form id="lessonForm" method="POST">
+          <div class="form-group">
+              <!-- Input fields for lesson details, teacher comments and etc -->
+              ...
+      
+              <!-- 삭제 버튼 -->
+              <button type="button" id="deleteButton" class="btn btn-danger">삭제</button>
+          </div>        
+        <div class= "button-container text-right mt-3">
+           <!-- Submit button for the form -->
+           <button type=submit class ="btn btn-primary">수정</button> 
+        </div>
+   </form>
 
-<!-- Add a container for the lesson form -->
+<!-- jQuery and Bootstrap.js -->
 
-<div id='form-container'>
-<h1>수업 기록 등록</h1>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-<form id='lessonForm' method='POST'>
-<!-- Rest of your form code goes here -->
+<!-- Custom JavaScript -->
+<!-- 추가된 부분 시작 -->
+<script type="text/javascript">
+  // history.pushState({}, '', '/lesson_update');
+  // JavaScript 코드를 사용하여 값 채우기
+  document.getElementById('lesson_detail').value = '{{ lesson_detail.lesson_detail }}';
+  document.getElementById('teach_comment').value = '{{ lesson_detail.teach_comment }}';
+  document.getElementById('etc').value = '{{ lesson_detail.etc }}';
+  
+  // 상세 과정 옵션 박스에 값 채우기
+  var subjectDetailSelect = document.getElementById('subjectDetailId');
+  {% for subject in subject_detail %}
+  var option = document.createElement("option");
+  option.value = '{{ subject.subject_detail_id }}';
+  option.text = '{{ subject.detail_script }}';
 
+  // 현재 선택된 항목인 경우 selected 속성 추가
+  if ('{{ subject.subject_detail_id }}' === '{{ lesson_detail.subject_detail_id }}') {
+      option.selected = true;
+  }
+
+  subjectDetailSelect.appendChild(option);
+  {% endfor %}
+  </script>
+<script src="/static/lesson_update.js"></script>
+
+</body></html>

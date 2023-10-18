@@ -27,7 +27,10 @@ $(document).ready(function() {
                 "data": 3, 
                 "render": function(data, type, row) {
                   var lessonId = row[row.length - 1];
-                  return '<a href="/lesson_update.html?lesson_id=' + lessonId + '">' + data + '</a>';
+                  
+                  var url = '/lesson_update_move/' + encodeURIComponent(lessonId);
+                  return '<a href="' + url + '">' + data + '</a>';
+                 
                 }
                }, // 과정 상세명 (링크 추가)
             { "data": 4 }, // 단계

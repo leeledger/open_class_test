@@ -275,7 +275,7 @@ def subject_detail_update_move(subject_detail_id):
     return render_template('subject_detail_update.html', subjects=subjects, subject_detail=subject_detail)
 
 @app.route('/subject-detail-delete/<int:subject_detail_id>', methods=['POST'])
-def subject_detail_delete(subject_detail_id):
+def subject_detail_delete(subject_detail_id): 
     subject_detail = SubjectDetail.query.get(subject_detail_id)
 
     if not subject_detail:
@@ -286,33 +286,7 @@ def subject_detail_delete(subject_detail_id):
 
     return "Success"  # 삭제 완료 후 리다이렉션할 페이지로 이동 (예: 학생 목록 페이지)
 # 과정상세 디테일 업데이트
-@app.route('/subject-detail-update/<int:subject_detail_id>', methods=['PUT'])
-def subject_detail_update(subject_detail_id):
-    # POST 요청으로부터 과정 정보 추출
-    data = request.get_json()  # JSON 데이터 추출
-    detail_subject_id = data.get('subject_id') 
-    detail_script = data.get('detail_script')
-    detail_level = data.get('level')
-    
-    # 데이터베이스에서 해당 ID의 과정 상세 정보 찾기
-    subject_detail = SubjectDetail.query.filter_by(subject_detail_id=subject_detail_id).first()
-    
-    if subject_detail:
-        try:
-            # 데이터베이스의 해당 레코드 수정
-            subject_detail.subject_id = detail_subject_id
-            subject_detail.detail_script = detail_script
-            subject_detail.level = detail_level
 
-            db.session.commit()
-            
-            return "Success"
-        
-        except Exception as e:
-            return str(e)
-            
-    else:
-        return "SubjectDetail not found", 404  # 적절한 에러 메시지와 함께 404 상태 코드 반환
 
 
 # 과정상세 디테일 수정
@@ -411,12 +385,50 @@ def create_student():
 @app.route('/lesson.html')
 def lesson():
     return render_template('lesson.html')
-@app.route('/lesson_update.html', methods=['GET'])
-def get_update_lessons():
-    pass # 레슨 업데이트 만들부분
+@app.route('/subject-detail-update/<int:subject_detail_id>', methods=['PUT'])
+def subject_detail_update(subject_detail_id):
+    # POST 요청으로부터 과정 정보 추출
+    data = request.get_json()  # JSON 데이터 추출
+    detail_subject_id = data.get('subject_id') 
+    detail_script = data.get('detail_script')
+    detail_level = data.get('level')
+    
+    # 데이터베이스에서 해당 ID의 과정 상세 정보 찾기
+    subject_detail = SubjectDetail.query.filter_by(subject_detail_id=subject_detail_id).first()
+    
+    if subject_detail:
+        try:
+            # 데이터베이스의 해당 레코드 수정
+            subject_detail.subject_id = detail_subject_id
+            subject_detail.detail_script = detail_script
+            subject_detail.level = detail_level
 
+            db.session.commit()
+            
+            return "Success"
+        
+        except Exception as e:
+            return str(e)
+            
+    else:
+        return "SubjectDetail not found", 404  # 적절한 에러 메시지와 함께 404 상태 코드 반환
+@app.route('/lesson_update_move/<int:lessonId>') # 수정 부분
+def lesson_update_move(lessonId):
+    lesson_detail = Lesson.query.get(lessonId)
+    subject_detail = SubjectDetail.query.all()
+    attendance = Attendance.query.filter_by(lesson_id=lessonId).first()
 
+    if not attendance:
+        return "Attendance not found", 404
+    student = Student.query.get(attendance.student_id)
 
+    if not student:
+        return "Student not found", 404
+
+    if not lesson_detail:
+        return "SubjectDetail not found", 404  # 적절한 에러 메시지와 함께 404 상태 코드 반환
+    # return redirect(url_for('lesson_update', lesson_id=lessonId))
+    return render_template('lesson_update.html', lesson_detail=lesson_detail, subject_detail=subject_detail, student_name=student.name)
 
 @app.route('/api/add_lessons', methods=['POST'])
 def add_lesson():
@@ -551,9 +563,34 @@ def lesson_search():
             row.lesson_detail,
             row.teach_comment
         ])
+        
+# 수업정보 업데이트
+@app.route('/lesson_update.html/<int:lesson_id>', methods=['PUT'])
+def update_lesson(lesson_id):
+    # 요청에서 전달된 데이터 가져오기
+    data = request.get_json()
+    
+    # 데이터베이스에서 해당 수업 조회
+    lesson = Lesson.query.get(lesson_id)
+
+    if not lesson:
+        return jsonify({'message': 'Lesson not found'}), 404
+    
+    # 전달받은 데이터로 수업 정보 업데이트
+    lesson.subject_detail_id = data['subject_detail_id']
+    lesson.lesson_detail = data['lesson_detail']
+    lesson.teach_comment= data['teach_comment']
+    lesson.etc= data['etc']
+
+    # 변경 사항 커밋
+    db.session.commit()
+
+    # 성공적으로 수정되었다고 가정하고 응답 생성
+    response = {'message': 'Success'}
+    
+    return jsonify(response), 200
 
 
-    return jsonify(result_list)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging
