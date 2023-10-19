@@ -2,6 +2,7 @@ $(document).ready(function() {
     var table = $('#lessonTable').DataTable({
         "processing": true,
         "serverSide": true,
+        "fixedHeader": true,
         "ajax": {
             url: "/api/lessons",
             type: 'POST',
