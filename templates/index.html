@@ -47,8 +47,9 @@
       <nav id ="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
         <div class="sidebar-sticky pt-3">
           <ul class= "nav flex-column">    
-            <li>
-              <a class = "navbar-brand" href="/">홈으로</a>
+  
+            <li class="{% if 'index' in currentPage %}active{% endif %}">
+              <a class="navbar-brand btn btn-primary" href="/">홈으로</a>
             </li>
        
             <li class="{% if 'student_list' in currentPage %}active{% endif %}">
@@ -90,7 +91,7 @@
 
 var currentURL = window.location.href.split('/');
 var currentPage = currentURL[currentURL.length -1].split('.')[0];
-
+console.log(currentPage)
 
 </script>
 

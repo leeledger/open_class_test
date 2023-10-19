@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 import logging
 app = Flask(__name__)
 # db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', 'students.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
 db = SQLAlchemy(app)
 
 # 학생 모델 정의
@@ -67,8 +67,15 @@ class Lesson(db.Model):
     # subject=db.relationship("Subject",back_populates="lessons")
     subject_detail=db.relationship("SubjectDetail",back_populates="lessons")
 @app.route('/')
+def home():
+    # '/' 경로로 들어오는 요청을 'index.html'로 리디렉션
+    return redirect(url_for('index'))
+    
+@app.route('/index.html')
 def index():
-     return render_template('index.html')
+    # 'index.html' 페이지의 내용을 반환
+    return render_template('index.html')
+ 
 @app.route('/student.html')
 def student():
     return render_template('student.html')
@@ -584,7 +591,7 @@ def lesson_update(lessonId):
         lesson.lesson_detail = data['lesson_detail']
         lesson.teach_comment = data['teach_comment']
         lesson.etc = data['etc']
-
+        print(data)
         # 변경 사항 커밋
         db.session.commit()
 
@@ -622,4 +629,5 @@ app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5050)
+    app.run('0.0.0.0',debug=True, port=5050)
+

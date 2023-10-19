@@ -30,7 +30,6 @@ $(document).ready(function() {
                   
                   var url = '/lesson_update_move/' + encodeURIComponent(lessonId);
                   return '<a href="' + url + '">' + data + '</a>';
-                 
                 }
                }, // 과정 상세명 (링크 추가)
             { "data": 4 }, // 단계

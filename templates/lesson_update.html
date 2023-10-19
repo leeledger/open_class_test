@@ -113,26 +113,31 @@
 <!-- Custom JavaScript -->
 <!-- 추가된 부분 시작 -->
 <script type="text/javascript">
+    // 상세 과정 옵션 박스에 값 채우기
+    var subjectDetailSelect = document.getElementById('subjectDetailId');
+    {% for subject in subject_detail %}
+    var option = document.createElement("option");
+    option.value = '{{ subject.subject_detail_id }}';
+    option.text = '{{ subject.subject_name }} {{ subject.detail_script }} {{subject.level}}';
+  
+    // 현재 선택된 항목인 경우 selected 속성 추가
+    if ('{{ subject.subject_detail_id }}' === '{{ lesson_detail.subject_detail_id }}') {
+        option.selected = true;
+    }
+  
+    subjectDetailSelect.appendChild(option);
+    {% endfor %}
   // history.pushState({}, '', '/lesson_update');
   // JavaScript 코드를 사용하여 값 채우기
-  document.getElementById('lesson_detail').value = '{{ lesson_detail.lesson_detail }}';
-  document.getElementById('teach_comment').value = '{{ lesson_detail.teach_comment }}';
-  document.getElementById('etc').value = '{{ lesson_detail.etc }}';
+  var lessonDetail = `{{ lesson_detail.lesson_detail|replace('<br>', '\n') }}`;
+  var teachComment = `{{ lesson_detail.teach_comment|replace('<br>', '\n') }}`;
+  var etc = `{{ lesson_detail.etc|replace('<br>', '\n') }}`;
   
-  // 상세 과정 옵션 박스에 값 채우기
-  var subjectDetailSelect = document.getElementById('subjectDetailId');
-  {% for subject in subject_detail %}
-  var option = document.createElement("option");
-  option.value = '{{ subject.subject_detail_id }}';
-  option.text = '{{ subject.subject_name }} {{ subject.detail_script }} {{subject.level}}';
+  document.getElementById('lesson_detail').value = lessonDetail;
+  document.getElementById('teach_comment').value = teachComment;
+  document.getElementById('etc').value = etc;
 
-  // 현재 선택된 항목인 경우 selected 속성 추가
-  if ('{{ subject.subject_detail_id }}' === '{{ lesson_detail.subject_detail_id }}') {
-      option.selected = true;
-  }
-
-  subjectDetailSelect.appendChild(option);
-  {% endfor %}
+;
   </script>
 <script src="/static/lesson_update.js"></script>
 

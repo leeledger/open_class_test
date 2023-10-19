@@ -145,16 +145,9 @@
 <script type='text/javascript'>
   $(document).ready(function() {
 
-      // 학생 이름 클릭 시 이벤트 처리
-  $('#lessonTable').on('click', '.student-name', function() {
-    var lessonId = $(this).closest('tr').find('.lesson-id').text();
-    var studentName = $(this).data('student');
-    
-    // 페이지 이동 및 데이터 전달
-    window.location.href = '/lesson_update?lesson_id=' + lessonId;
-  });
+
       // 시작일자와 종료일자를 선택할 수 있는 date time picker 초기화
-    var startDatePicker = $('#startDatePicker').datepicker({
+    var startDatePicker = $('#st    artDatePicker').datepicker({
       format: 'yyyy-mm-dd', // 날짜 형식 설정
       autoclose: true, // 선택 시 자동으로 닫힘 
       todayHighlight: true, // 오늘 날짜 강조 표시 
