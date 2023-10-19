@@ -125,10 +125,12 @@ def api_lessons():
     start_date_obj = datetime.strptime(start_date_str + "T00:00:00", '%Y-%m-%dT%H:%M:%S') if start_date_str else None
     end_date_obj = datetime.strptime(end_date_str + "T23:59:59", '%Y-%m-%dT%H:%M:%S') if end_date_str else None
    # Query all lessons
+    
     query = db.session.query(
        Lesson.date,
-       Student.grade_level,
+    #    Student.grade_level,
        Student.name,
+       Subject.name.label("subject_name"),
        SubjectDetail.detail_script,
        SubjectDetail.level,
        Lesson.lesson_detail,
@@ -153,7 +155,11 @@ def api_lessons():
     if start_date_obj and end_date_obj:
         query=query.filter(Lesson.date.between(start_date_obj,end_date_obj))
 
-    records_total = query.count()
+    try:
+        records_total = query.count()
+    except Exception as e:
+    # 예외 처리: 데이터베이스 조회 중 에러 발생 시 0으로 설정하거나 다른 동작 수행
+        records_total = 0
 
     lessons=query.limit(length).offset(start).all()
 
@@ -161,8 +167,8 @@ def api_lessons():
 
     for lesson in lessons:
             data_result.append([lesson.date.strftime('%Y-%m-%d'), 
-                                lesson.grade_level, 
                                 lesson.name, 
+                                lesson.subject_name, 
                                 lesson.detail_script, 
                                 lesson.level if lesson.level else '', 
                                 lesson.lesson_detail if lesson.lesson_detail else '', 

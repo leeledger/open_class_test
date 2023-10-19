@@ -22,15 +22,20 @@ $(document).ready(function() {
         },
         "columns": [
             { "data": 0 }, // 날짜
-            { "data": 1 }, // 학년
-            { "data": 2 }, // 학생 이름
+            { "data": 1 }, // 학생이름
+            { "data": 2 }, // 대분류 과목명
             { 
                 "data": 3, 
                 "render": function(data, type, row) {
-                  var lessonId = row[row.length - 1];
-                  
-                  var url = '/lesson_update_move/' + encodeURIComponent(lessonId);
-                  return '<a href="' + url + '">' + data + '</a>';
+                    var lessonId;
+                    if (row.length > 0) {
+                        lessonId = row[row.length - 1];
+                    } else {
+                        // 예외 처리: row 배열이 비어있을 때 필요한 동작 수행
+                        lessonId = ''; // 또는 다른 값으로 설정
+                    }
+                    var url = '/lesson_update_move/' + encodeURIComponent(lessonId);
+                    return '<a href="' + url + '">' + data + '</a>';
                 }
                }, // 과정 상세명 (링크 추가)
             { "data": 4 }, // 단계
