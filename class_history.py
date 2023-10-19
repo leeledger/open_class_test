@@ -171,7 +171,7 @@ def api_lessons():
     return jsonify({
         'draw': draw,
         'recordsTotal': records_total,
-        'recordsFiltered': records_total - len(data_result),
+        'recordsFiltered': records_total,
         'data': data_result
 })
 

@@ -10,15 +10,13 @@ $(document).ready(function() {
     .then(data => {
       // Process and display student data
       data.forEach(function(student) {
-        $('#studentId').append(`<option value="${student.id}" data-grade="${student.grade_level}">${student.name}</option>`);
+        $('#students').append(`<option value="${student.name}" data-id="${student.id}" data-grade="${student.grade_level}">`);
       });
       
-      // Display grade level of selected student
-      $('#gradeLevel').text($('#studentId option:selected').data('grade'));
-      
       // Update grade level when a different student is selected
-      $('#studentId').change(function() {
-        $('#gradeLevel').text($('#studentId option:selected').data('grade'));
+      $('#studentId').on('input', function() {
+        let selectedOption = $(`#students option[value='${$(this).val()}']`);
+        $('#gradeLevel').text(selectedOption.data('grade'));
       });
     })
     .catch(error => console.error('Error:', error));
@@ -34,18 +32,21 @@ $(document).ready(function() {
      .then(data => {
        // Process and display subject detail data
        data.forEach(function(subject) {
-         $('#subjectDetailId').append(`<option value="${subject.id}" data-name="${subject.name}" data-level="${subject.level}">${subject.name} ${subject.detail_script} ${subject.level}</option>`);
-         
+         $('#subjects').append(`<option value="${subject.name} ${subject.detail_script} ${subject.level}" 
+                                data-id="${subject.id}"
+                                data-name="${subject.name}"
+                                >`);
        });
 
-       // Display subject name and level of selected subject detail script 
-       $('#subjectName').text($('#subjectDetailId option:selected').data('name'));
-       $('#level').text($('#subjectDetailId option:selected ').data('level'));
-
        // Update subject name and level when a different detail script is selected
-       $('#subjectDetailId').change(function() {
-           $('#subjectName').text($('#subjectDetailId option:selected').data('name'));
-         });
+        $('#subjectDetailId').on('input', function() { 
+          let inputValue = $(this).val();
+          let selectedOption = $("#subjects option").filter(function() {
+              return this.value.indexOf(inputValue) === 0;
+          }).first();
+          
+          $('#subjectName').text(selectedOption.data('name'));
+      });
      })
      .catch(error => console.error('Error:', error));
   
@@ -55,6 +56,9 @@ $(document).ready(function() {
 
             e.preventDefault();
             let formData = new FormData(this);
+
+            formData.set("student_id", $(`#students option[value='${$('#studentId').val()}']`).data("id"));
+            formData.set("subject_detail_id", $(`#subjects option[value='${$('#subjectDetailId').val()}']`).data("id"));
 
             // Submit the form using AJAX.
             fetch('/api/add_lessons', { method: 'POST', body: formData })

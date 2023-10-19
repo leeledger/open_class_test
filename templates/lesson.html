@@ -15,7 +15,9 @@
       padding: 48px,1rem;
       background-color: #f8f9fa;
     }
-  
+  .option {
+    background-color: lightblue;
+  }
     .sidebar-sticky {
       position: -webkit-sticky; /* For Safari */
       position: sticky; 
@@ -73,19 +75,21 @@
     <form id="lessonForm" method="POST">
         <div class="form-group">
           <div style="display: flex;">
-            <div style="flex: 3;">
-              <label for='studentId'>학생:</label>
-              <select id='studentId' name='student_id' class='form-control'></select> 
-              
-              학년: <span id='gradeLevel'></span><br/>
-            </div>
-            <div style="flex: 7;">
-              <label for='subjectDetailId'>상세 과정:</label>
-              <select id='subjectDetailId' name='subject_detail_id' class='form-control'></select> 
-              과정: <span id='subjectName'></span><br/>
-            </div>
+              <div style="flex: 3;">
+                  <label for='studentId'>학생:</label>
+                  <input list='students' id='studentId' name='student_id' class='form-control'>
+                  <datalist id='students'></datalist>
+                  
+                  학년: <span id='gradeLevel'></span><br/>
+              </div>
+              <div style="flex: 7;">
+                  <label for='subjectDetailId'>상세 과정:</label>
+                  <input list='subjects' id='subjectDetailId' name='subject_detail_id' class='form-control'>
+                  <datalist id='subjects'></datalist>
+              </div>
           </div>
-            
+        </div>
+        <div>    
 
              <!-- Input fields for lesson details, teacher comments and etc -->
              수업 내용: 
@@ -98,12 +102,12 @@
               <textarea name= 'etc' rows = "5" class = "form-control"></textarea><br/>
         </div> 
         <div class= "button-container text-right mt-3">
-           <!-- Submit button for the form -->
-           <button type=submit class ="btn btn-primary">Add Lesson</button> 
-           
-        </div>
-   </form>
+          <!-- Submit button for the form -->
+            <button type=submit class ="btn btn-primary">Add Lesson</button> 
+          </div>
+      
 
+   </form>
 <!-- jQuery and Bootstrap.js -->
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
