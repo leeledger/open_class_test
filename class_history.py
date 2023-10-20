@@ -628,10 +628,15 @@ def lesson_delete(lessonId):
     
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+# 레포트 자료 만들기 라우팅함수
+@app.route('/report.html')
+def report():
+    
+    return render_template('report.html')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging
+app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 if __name__ == '__main__':

@@ -1,4 +1,10 @@
 $(document).ready(function() {
+  $('#lessonForm').on('keydown', function(event) {
+    if (event.keyCode === 13 && !event.target.matches('button[type="submit"]') && event.target.tagName !== 'TEXTAREA') {
+      event.preventDefault();
+    }
+  });
+
   // Fetch students data from the server
   fetch('/api/students')
     .then(response => {
@@ -53,20 +59,15 @@ $(document).ready(function() {
   // Handle form submission
   document.querySelector('#lessonForm')
           .addEventListener("submit", function(e) {
-
             var studentInputValue = $("#studentId").val().trim();
             var subjectDetailInputValue = $("#subjectDetailId").val().trim();
-
             if (!isValidOption(studentInputValue, 'students') || !isValidOption(subjectDetailInputValue, 'subjects')) { 
               e.preventDefault(); 
               alert("올바른 학생 또는 과목을 선택해주세요.");
               return;
             }
-
             e.preventDefault();
-
             let formData = new FormData(this);
-
             formData.set("student_id", $(`#students option[value='${$('#studentId').val()}']`).data("id"));
             formData.set("subject_detail_id", $(`#subjects option[value='${$('#subjectDetailId').val()}']`).data("id"));
 
