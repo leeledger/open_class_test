@@ -1,15 +1,19 @@
-from flask import Flask, render_template, request,jsonify,redirect,url_for
+from flask import Flask, render_template, request,jsonify,redirect,url_for,session,send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from sqlalchemy import and_, or_
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 import logging
+import os
+import shutil
 app = Flask(__name__)
 # db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', 'students.db')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
 db = SQLAlchemy(app)
+app.config['SECRET_KEY'] = '12345'
+app.config['UPLOAD_FOLDER'] = 'photos'  # Flask 서버의 photos 폴더
+
 
 # 학생 모델 정의
 class Student(db.Model):
@@ -629,12 +633,114 @@ def lesson_delete(lessonId):
     except Exception as e:
         return jsonify({'message': str(e)}), 500
 # 레포트 자료 만들기 라우팅함수
-@app.route('/report.html')
-def report():
-    
-    return render_template('report.html')
+@app.route('/lesson_report.html')
+def lesson_report():
+    return render_template('lesson_report.html')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
+
+@app.route('/api/report', methods=['GET', 'POST'])
+def report():
+   if request.method == 'POST':
+       data = request.get_json()
+       
+       # 전달받은 데이터를 변수에 담아서 처리
+       selectedRowsData = data['data']
+       start_date = data['startDate']
+       end_date = data['endDate']
+
+       # Store data in session
+       session['data'] = selectedRowsData
+       session['startDate'] = start_date
+       session['endDate'] = end_date
+
+       return jsonify(success=True)  # Return JSON response
+
+   else:
+      return render_template('lesson_report.html')
+# @app.route('/report_sample')
+# def report_sample():
+#     # Get data from session
+#     selectedRowsData = session.get('data')
+
+#     # Extract the actual list data from the dictionary
+#     if selectedRowsData and 'data' in selectedRowsData:
+#         selectedRowsData = selectedRowsData['data']
+
+#     start_date = session.get('startDate')
+#     end_date = session.get('endDate')
+
+#      # Check if the data is in the correct format (list of lists)
+#     if isinstance(selectedRowsData, list) and all(isinstance(row, list) for row in selectedRowsData):
+#         pass  # If the data is already in the correct format, no need to change anything
+#     else:
+#         selectedRowsData = [[item] for item in selectedRowsData]  # If not convert it into a list of lists
+
+#     return render_template('report_sample.html', data=selectedRowsData,
+#                         startDate=start_date,
+#                         endDate=end_date)
+@app.route('/report_sample')
+def report_sample():
+    # Get data from session
+    selectedRowsData = session.get('data')
+
+    # Extract the actual list data from the dictionary
+    if selectedRowsData and 'data' in selectedRowsData:
+        selectedRowsData = selectedRowsData['data']
+
+    start_date = session.get('startDate')
+    end_date = session.get('endDate')
+
+     # Check if the data is in the correct format (list of lists)
+    if isinstance(selectedRowsData, list) and all(isinstance(row, list) for row in selectedRowsData):
+        pass  # If the data is already in the correct format, no need to change anything
+    else:
+        selectedRowsData = [[item] for item in selectedRowsData]  # If not convert it into a list of lists
+
+    photo_directory = r"\\192.168.0.225\학원공유"  # 파일 경로 설정
+
+    filtered_photos = []
+
+    for row_data in selectedRowsData:
+        student_name = row_data[1]  # 학생 이름은 첫 번째 열로 가정합니다.
+        student_folder_path = os.path.join(photo_directory, student_name)
+
+        if not os.path.exists(student_folder_path):  # 학생 폴더가 존재하지 않으면 생성합니다.
+            os.makedirs(student_folder_path)
+
+        count = 0
+        for filename in os.listdir(student_folder_path):
+            if filename.endswith(".jpg"):
+                _, name, _ = filename.split("_")  # creation_date 부분은 사용하지 않음
+                if name == student_name and start_date <= end_date:
+                    photo_source_path = os.path.join(student_folder_path, filename)
+                    photo_dest_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    
+                    shutil.copy2(photo_source_path, photo_dest_path)  # 파일 복사
+                    
+                    filtered_photos.append(filename)  # 복사된 파일명 추가
+                    
+                    count += 1
+                    if count >= 6:  # 최대 사진 개수인 6개까지만 가져옵니다.
+                        break
+
+    return render_template('report_sample.html', data=selectedRowsData,
+                           startDate=start_date,
+                           endDate=end_date,
+                           photos=filtered_photos)
+
+@app.route('/photos/<path:filename>')
+def photos(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+# @app.route('/api/report', methods=['GET', 'POST'])
+# def report():
+#     if request.method == 'POST':
+#         selectedRowsData = request.get_json()
+#         # 전달받은 데이터를 변수에 담아서 처리
+#         print(selectedRowsData)
+#         return redirect(url_for('report_sample', data=selectedRowsData))
+#     else:
+#         return render_template('lesson_report.html')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging 
 logging.basicConfig()
