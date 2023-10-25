@@ -6,15 +6,68 @@ from sqlalchemy.orm import sessionmaker
 import logging
 import os
 import shutil
+from flask_login import LoginManager,UserMixin, login_user, logout_user, login_required, current_user
+
+
 app = Flask(__name__)
-# db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', 'students.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = '12345'
 app.config['UPLOAD_FOLDER'] = 'photos'  # Flask 서버의 photos 폴더
 
+login_manager = LoginManager()
+login_manager.init_app(app)
 
+class User(UserMixin):
+    def __init__(self, user_id):
+        self.id = user_id
+
+# 미리 정의된 사용자 아이디 목록
+users = {
+    'user1': User('user1'),
+    'user2': User('user2'),
+}
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        if username in users:
+            user = users[username]
+            login_user(user)
+            return redirect(url_for('index'))
+
+    return render_template('login.html')
+
+# user_loader 함수
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+
+@app.route('/')
+def start():
+    if current_user.is_authenticated:  # 이미 로그인한 사용자인 경우
+        return redirect(url_for('index'))  # 대시보드로 리디렉션
+
+    return render_template('login.html')  # 로그인 페이지 표시
+
+# @app.route('/')
+# def home():
+#     # '/' 경로로 들어오는 요청을 'index.html'로 리디렉션
+#     return redirect(url_for('index'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return 'Welcome to the dashboard!'
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return 'Logged out successfully'
+  
 # 학생 모델 정의
 class Student(db.Model):
     __tablename__ = 'students'
@@ -70,20 +123,20 @@ class Lesson(db.Model):
     attendances=db.relationship("Attendance",back_populates="lesson")
     # subject=db.relationship("Subject",back_populates="lessons")
     subject_detail=db.relationship("SubjectDetail",back_populates="lessons")
-@app.route('/')
-def home():
-    # '/' 경로로 들어오는 요청을 'index.html'로 리디렉션
-    return redirect(url_for('index'))
-    
+
+
+
 @app.route('/index.html')
+@login_required
 def index():
-    # 'index.html' 페이지의 내용을 반환
-    return render_template('index.html')
+    return render_template('/index.html')
  
 @app.route('/student.html')
+@login_required
 def student():
     return render_template('student.html')
 @app.route('/student_list.html')
+@login_required
 def student_list():
     # 데이터베이스에서 모든 학생 정보를 가져옴
     students = Student.query.all()
@@ -93,10 +146,12 @@ def student_list():
 
 # 과정정보
 @app.route('/subject.html')
+@login_required
 def subject():
     return render_template('subject.html')
 # 과정정보 리스트
 @app.route('/subject_list.html')
+@login_required
 def subject_list():
     # 데이터베이스에서 모든 학생 정보를 가져옴
     subjects = Subject.query.all()
@@ -109,6 +164,7 @@ def get_subject_by_id(subject_id):
     return Subject.query.get(subject_id)  # Replace with the retrieved subject object or None if not found
 # 레슨 리스트
 @app.route('/lesson_list.html')
+@login_required
 def lessons():
     return render_template('lesson_list.html')
 
@@ -190,6 +246,7 @@ def api_lessons():
 
 # 과정상세 리스트
 @app.route('/subject_list_detail.html')
+@login_required
 def subject_list_detail():
     # 데이터베이스에서 모든 과정상세 정보를 가져옴
     subject_details = SubjectDetail.query.all()
@@ -203,6 +260,7 @@ def subject_list_detail():
 
 # 과정상세정보
 @app.route('/subject_detail.html')
+@login_required
 def subject_detail():
     subjects = Subject.query.all()  # 모든 과목 정보 가져오기
 
@@ -269,6 +327,7 @@ def update_subject(subject_id):
         return str(e)
     
 @app.route('/edit-subject/<int:subject_id>')
+@login_required
 def edit_subject(subject_id):
     # 데이터베이스에서 해당 ID의 학생 정보를 가져옴
     subject = Subject.query.get(subject_id)
@@ -279,6 +338,7 @@ def edit_subject(subject_id):
     # 브랜치 테스트
 
 @app.route('/subject-detail-update-move/<int:subject_detail_id>')
+@login_required
 def subject_detail_update_move(subject_detail_id):
     # 데이터베이스에서 해당 ID의 과목 상세 정보 찾기
     subject_detail = SubjectDetail.query.get(subject_detail_id)
@@ -400,6 +460,7 @@ def create_student():
         return str(e)
 
 @app.route('/lesson.html')
+@login_required
 def lesson():
     return render_template('lesson.html')
 @app.route('/subject-detail-update/<int:subject_detail_id>', methods=['PUT'])
@@ -430,6 +491,7 @@ def subject_detail_update(subject_detail_id):
     else:
         return "SubjectDetail not found", 404  # 적절한 에러 메시지와 함께 404 상태 코드 반환
 @app.route('/lesson_update_move/<int:lessonId>') # 수정 부분
+@login_required
 def lesson_update_move(lessonId):
     lesson_detail = Lesson.query.get(lessonId)
     subject_detail = SubjectDetail.query.all()
@@ -634,11 +696,13 @@ def lesson_delete(lessonId):
         return jsonify({'message': str(e)}), 500
 # 레포트 자료 만들기 라우팅함수
 @app.route('/lesson_report.html')
+@login_required
 def lesson_report():
     return render_template('lesson_report.html')
 
 
 @app.route('/api/report', methods=['GET', 'POST'])
+@login_required
 def report():
    if request.method == 'POST':
        data = request.get_json()
@@ -696,8 +760,8 @@ def report_sample():
     else:
         selectedRowsData = [[item] for item in selectedRowsData]  # If not convert it into a list of lists
 
-    photo_directory = r"\\192.168.0.225\학원공유"  # 파일 경로 설정 윈도우 기준
-    # photo_directory = '/volume1/학원공유'  # 리눅스 환경
+    # photo_directory = r"\\192.168.0.225\학원공유"  # 파일 경로 설정 윈도우 기준
+    photo_directory = '/volume1/학원공유'  # 리눅스 환경
 
     filtered_photos = []
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-image: url('coding-1853305_1280.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(80%) grayscale(30%);
+            font-family: 'Arial', sans-serif; /* Sensuous font */
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        .content {
+            text-align: center;
+            padding: 50px;
+            color: #0066cc; /* 파란색 계열의 텍스트 색상 (#0066cc는 파란색 예시) */
+        }
+    
+        h1 {
+            font-size: 36px;
+        }
+    
+        .form-group {
+            margin: 20px 0;
+        }
+    
+        label {
+            font-size: 20px;
+        }
+    
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #0066cc; /* 파란색 계열의 테두리 색상 */
+            border-radius: 5px;
+            font-size: 18px;
+        }
+    
+        button {
+            background-color: #0066cc; /* 파란색 계열의 버튼 배경 색상 */
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>로봇앤코딩학원</h1>
+        <form method="post" action="/login">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" class="form-control" id="username" name="username">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+</body>
+</html>
