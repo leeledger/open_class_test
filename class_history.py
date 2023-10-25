@@ -696,7 +696,8 @@ def report_sample():
     else:
         selectedRowsData = [[item] for item in selectedRowsData]  # If not convert it into a list of lists
 
-    photo_directory = r"\\192.168.0.225\학원공유"  # 파일 경로 설정
+    photo_directory = r"\\192.168.0.225\학원공유"  # 파일 경로 설정 윈도우 기준
+    # photo_directory = '/volume1/학원공유'  # 리눅스 환경
 
     filtered_photos = []
 
@@ -709,7 +710,7 @@ def report_sample():
 
         count = 0
         for filename in os.listdir(student_folder_path):
-            if filename.endswith(".jpg"):
+            if filename.endswith(".jpg") and student_name in filename:
                 _, name, _ = filename.split("_")  # creation_date 부분은 사용하지 않음
                 if name == student_name and start_date <= end_date:
                     photo_source_path = os.path.join(student_folder_path, filename)
@@ -732,6 +733,12 @@ def report_sample():
 def photos(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route('/delete_all_photos')
+def delete_all_photos():
+    shutil.rmtree(app.config['UPLOAD_FOLDER'])
+    os.makedirs(app.config['UPLOAD_FOLDER'])  # 폴더를 다시 생성합니다
+    return redirect(url_for('report_sample'))
+
 # @app.route('/api/report', methods=['GET', 'POST'])
 # def report():
 #     if request.method == 'POST':
@@ -741,6 +748,21 @@ def photos(filename):
 #         return redirect(url_for('report_sample', data=selectedRowsData))
 #     else:
 #         return render_template('lesson_report.html')
+@app.route('/api/tooltip', methods = ['GET'])
+def tooltip():
+    
+    subject_id = request.args.get('subjectId')
+
+    # SQLAlchemy를 사용하여 데이터베이스에서 데이터 조회
+    result = Lesson.query.filter_by(subject_detail_id=subject_id).order_by(Lesson.date.desc()).limit(5).all()
+
+    if result:
+        # 결과가 있으면 tooltip_content를 생성
+        tooltip_content = "\n".join(lesson.lesson_detail for lesson in result)
+        return jsonify({'tooltipContent': tooltip_content})
+    else:
+        return jsonify({'tooltipContent': '이전 수업 내용이 없습니다'})  # 레코드가 없을 때 빈 문자열 반환
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging 
 logging.basicConfig()

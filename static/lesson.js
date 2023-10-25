@@ -45,17 +45,43 @@ $(document).ready(function() {
        });
 
        // Update subject name and level when a different detail script is selected
-        $('#subjectDetailId').on('input', function() { 
-          let inputValue = $(this).val();
-          let selectedOption = $("#subjects option").filter(function() { 
-              return this.value.indexOf(inputValue) === 0;
-          }).first();
-          
-          $('#subjectName').text(selectedOption.data('name'));
-        });
-     })
-     .catch(error => console.error('Error:', error));
-  
+       $('#subjectDetailId').on('input', function(event) { 
+        let inputValue = $(this).val();
+        let selectedOption = $("#subjects option").filter(function() { 
+          return this.value.indexOf(inputValue) === 0;
+        }).first();
+      
+        if (selectedOption.length > 0) {
+          const subjectId = selectedOption.data('id');
+        
+          fetch(`/api/tooltip?subjectId=${subjectId}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Failed to fetch tooltip content');
+              }
+              return response.text();
+            })
+            .then(tooltipContent => {
+              tooltipContent = decodeUnicode(tooltipContent);
+              data = JSON.parse(tooltipContent)
+              tooltipContent = data.tooltipContent;
+              const hiddenTooltip = document.getElementById('hiddenTooltip');
+              hiddenTooltip.innerText = tooltipContent;
+              
+              // 마우스 위치에 표시
+              hiddenTooltip.style.top = event.clientY + 10 + 'px';
+              hiddenTooltip.style.left = event.clientX + 10 + 'px';
+              hiddenTooltip.style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+          // 선택된 옵션이 없을 때 툴팁 숨김
+          const hiddenTooltip = document.getElementById('hiddenTooltip');
+          hiddenTooltip.style.display = 'none';
+        }
+        $('#subjectName').text(selectedOption.data('name'));
+      });
+    });
   // Handle form submission
   document.querySelector('#lessonForm')
           .addEventListener("submit", function(e) {
@@ -91,7 +117,11 @@ $(document).ready(function() {
           });
 
 });
-
+function decodeUnicode(text) {
+  return text.replace(/\\u[\dA-Fa-f]{4}/g, match => {
+    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+  });
+}
 function isValidOption(value, datalistId) {
   var datalistOptions = document.getElementById(datalistId).options;
   
