@@ -99,7 +99,7 @@
      <!-- Teacher Feedback -->
 <!-- Teacher Feedback -->
 <div class="teacher-feedback p-4 my-4 border border-info rounded bg-light">
-  <h4 class="text-info mb-3">선생님 의견</h4>
+  <h4 class="text-info mb-3">교사 지도</h4>
   {% for row in data %}
       <!-- Assuming the 7th item in each row is the teacher's feedback -->
       {% if loop.index0 < 6 %}
@@ -122,11 +122,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
   </body>
-  <div class="row">
+  <div class="row" id="photo-container">
     {% set max_iterations = (photos|length / data|length)|int %}  {# 원하는 반복 횟수를 설정 #}
     {% for photo in photos %}
       {% if loop.index0 < max_iterations %}
-        <div class="col-md-4">
+        <div class="col-md-4 photo-item">
           <div class="card mb-4 rounded">
             <img src="{{ url_for('photos', filename=photo) }}" class="card-img-top" style="max-width: 400px; max-height: 400px; object-fit: contain;">
           </div>
@@ -141,6 +141,41 @@
     <h5>발급일자 : 현재일자</h5>
   </div>
  <script type='text/javascript'>
+    document.addEventListener("DOMContentLoaded", function() {
+      const photoItems = document.querySelectorAll(".photo-item");
+
+      photoItems.forEach(item => {
+          item.addEventListener("click", function() {
+              // 숨길 사진을 찾아서 숨깁니다.
+              item.style.display = "none";
+
+              // 숨긴 사진의 높이를 가져와서 다음 사진을 이 위치로 이동시킵니다.
+              const hiddenPhotoHeight = item.offsetHeight;
+              photoItems.forEach(nextItem => {
+                  if (nextItem.offsetTop > item.offsetTop) {
+                      nextItem.style.transform = `translateY(-${hiddenPhotoHeight}px)`;
+                  }
+              });
+          });
+      });
+  });
+      // 페이지가 로드된 후에 엔드포인트를 호출하도록 JavaScript를 사용합니다.
+      window.addEventListener('load', function() {
+        // 엔드포인트 호출
+        fetch('/delete_all_photos', {
+            method: 'GET'
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Photos deleted successfully');
+            } else {
+                console.error('Error deleting photos');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
     document.querySelector('h5').innerHTML = `발급일자 : ${new Date().toLocaleDateString()}`;
 </script>
 </html>

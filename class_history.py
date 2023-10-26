@@ -7,11 +7,12 @@ import logging
 import os
 import shutil
 from flask_login import LoginManager,UserMixin, login_user, logout_user, login_required, current_user
+import platform
 
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = '12345'
 app.config['UPLOAD_FOLDER'] = 'photos'  # Flask 서버의 photos 폴더
@@ -761,8 +762,11 @@ def report_sample():
         selectedRowsData = [[item] for item in selectedRowsData]  # If not convert it into a list of lists
 
     # photo_directory = r"\\192.168.0.225\학원공유"  # 파일 경로 설정 윈도우 기준
-    photo_directory = '/volume1/학원공유'  # 리눅스 환경
-
+    # photo_directory = '/volume1/학원공유'  # 리눅스 환경
+    if platform.system() == 'Windows':
+        photo_directory = r"\\192.168.0.225\학원공유"  # 윈도우 환경의 파일 경로
+    else:
+        photo_directory = '/volume1/학원공유'  # 리눅스 환경의 파일 경로
     filtered_photos = []
 
     for row_data in selectedRowsData:
@@ -778,6 +782,8 @@ def report_sample():
                 _, name, _ = filename.split("_")  # creation_date 부분은 사용하지 않음
                 if name == student_name and start_date <= end_date:
                     photo_source_path = os.path.join(student_folder_path, filename)
+                    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                        os.makedirs(app.config['UPLOAD_FOLDER'])
                     photo_dest_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     
                     shutil.copy2(photo_source_path, photo_dest_path)  # 파일 복사
@@ -832,5 +838,5 @@ app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 if __name__ == '__main__':
-    app.run('0.0.0.0',debug=True, port=5050)
+    app.run('0.0.0.0', port=5050)
 
