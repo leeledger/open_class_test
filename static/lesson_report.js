@@ -1,7 +1,7 @@
 var table; // Define the table variable outside of the $(document).ready() function
-
+var loadingElement = $('#loading');
 $(document).ready(function() {
-    
+
     table = $('#lessonTable').DataTable({
         "processing": true,
         "serverSide": true,
@@ -58,6 +58,7 @@ $(document).ready(function() {
 });
 
 $('#createReportBtn').on('click', function() {
+    loadingElement.show();
     var selectedRowsData = [];
     $('#lessonTable tbody input[type="checkbox"]:checked').each(function() {
         var row = $(this).closest('tr');
@@ -77,12 +78,14 @@ $('#createReportBtn').on('click', function() {
         data: JSON.stringify({ data: selectedRowsData, startDate: startDate, endDate:endDate  }),
         // dataType: 'json', // expect JSON response
         success: function(response) {
+            loadingElement.hide();
             console.log(response);
             
             // Redirect to report_sample.html page after AJAX request is successful
             window.location.href = '/report_sample';  // Change the URL as per your route configuration
         },
         error: function(error) {
+            loadingElement.hide();
             console.log(error);
         }
     });

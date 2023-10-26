@@ -791,7 +791,7 @@ def report_sample():
                     filtered_photos.append(filename)  # 복사된 파일명 추가
                     
                     count += 1
-                    if count >= 6:  # 최대 사진 개수인 6개까지만 가져옵니다.
+                    if count >= 12:  # 최대 사진 개수인 6개까지만 가져옵니다.
                         break
 
     return render_template('report_sample.html', data=selectedRowsData,
