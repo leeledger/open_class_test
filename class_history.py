@@ -779,8 +779,8 @@ def report_sample():
         count = 0
         for filename in os.listdir(student_folder_path):
             if filename.endswith(".jpg") and student_name in filename:
-                _, name, _ = filename.split("_")  # creation_date 부분은 사용하지 않음
-                if name == student_name and start_date <= end_date:
+                shot_date, name, _ = filename.split("_")  # creation_date 부분은 사용하지 않음
+                if name == student_name and start_date.replace("-","") <= shot_date and shot_date <= end_date.replace("-",""):
                     photo_source_path = os.path.join(student_folder_path, filename)
                     if not os.path.exists(app.config['UPLOAD_FOLDER']):
                         os.makedirs(app.config['UPLOAD_FOLDER'])

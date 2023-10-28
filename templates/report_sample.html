@@ -49,7 +49,11 @@
           page-break-inside: avoid;
       }
   }
-
+  .editable-text:hover {
+    background-color: #f7f7f7;
+    border: 1px dashed #ccc;
+    cursor: text;
+}
 </style>
   </head>
   <body>
@@ -103,6 +107,7 @@
 <!-- Teacher Feedback -->
 <div class="teacher-feedback p-4 my-4 border border-info rounded bg-light">
   <h4 class="text-info mb-3">교사 지도</h4>
+  <div class="editable-text">
   {% for row in data %}
       <!-- Assuming the 7th item in each row is the teacher's feedback -->
       {% if loop.index0 < 6 %}
@@ -111,6 +116,7 @@
           </p>
       {% endif %}
   {% endfor %}
+      </div>
 </div>
 
 <style>
@@ -144,6 +150,18 @@
     <h5>발급일자 : 현재일자</h5>
   </div>
  <script type='text/javascript'>
+    document.addEventListener("DOMContentLoaded", function() {
+      const textAreas = document.querySelectorAll(".editable-text");
+      textAreas.forEach(area => {
+          area.addEventListener("click", function(e) {
+              e.currentTarget.setAttribute("contenteditable", "true");
+              e.currentTarget.focus();
+          });
+          area.addEventListener("blur", function(e) {
+              e.currentTarget.removeAttribute("contenteditable");
+          });
+      });
+  });
     document.addEventListener("DOMContentLoaded", function() {
       const photoItems = document.querySelectorAll(".photo-item");
 
