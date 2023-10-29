@@ -22,7 +22,50 @@ $(document).ready(function() {
       // Update grade level when a different student is selected
       $('#studentId').on('input', function() {
         let selectedOption = $(`#students option[value='${$(this).val()}']`);
-        $('#gradeLevel').text(selectedOption.data('grade'));
+        var gradeValue = selectedOption.data('grade');
+        var gradeText;
+        switch (gradeValue) {
+          case 1:
+              gradeText = "초1";
+              break;
+          case 2:
+              gradeText = "초2";
+              break;
+          case 3:
+              gradeText = "초3";
+              break;
+          case 4:
+              gradeText = "초4";
+              break;
+          case 5:
+              gradeText = "초5";
+              break  
+          case 6:
+              gradeText = "초6";
+              break  
+          case 7:
+              gradeText = "중1";
+              break  
+          case 8:
+              gradeText = "중2";
+              break  
+          case 9:
+              gradeText = "중3";
+              break  
+          case 10:
+              gradeText = "고1";
+              break  
+          case 11:
+              gradeText = "고2";
+              break  
+          case 12:
+              gradeText = "고3";
+              break  
+          // ... 중1, 중2, ... 고1, 고2 등등 나머지 학년에 대한 코드를 여기에 추가하세요.
+          default:
+              gradeText = "";
+      }
+      $('#gradeLevel').text(gradeText);
       });
     })
     .catch(error => console.error('Error:', error));
