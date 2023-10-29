@@ -1,5 +1,6 @@
 $(document).ready(function() {
     var table = $('#lessonTable').DataTable({
+        "ordering": false,
         "processing": true,
         "serverSide": true,
         "fixedHeader": true,

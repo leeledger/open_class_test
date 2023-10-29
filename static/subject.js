@@ -87,7 +87,7 @@ function deleteSubject(subjectId) {
 // 삭제 응답 처리 함수
 function handleDeleteResponse(result) {
   console.log(result);
-
+asdasdsad
   if (result === "Success") { 
     alert("과정 정보가 성공적으로 삭제되었습니다.");
     window.location.href = "/subject_list.html"; 

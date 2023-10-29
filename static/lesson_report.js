@@ -3,6 +3,7 @@ var loadingElement = $('#loading');
 $(document).ready(function() {
 
     table = $('#lessonTable').DataTable({
+        "ordering": false,
         "processing": true,
         "serverSide": true,
         "fixedHeader": true,
@@ -53,21 +54,39 @@ $(document).ready(function() {
                    table.ajax.reload();
                }
            });
+            // 체크박스 헤더에 클릭 이벤트 추가
+            $('#lessonTable thead').on('click', 'input[type="checkbox"]', function() {
+                var checkedStatus = this.checked;
+                $('#lessonTable tbody input[type="checkbox"]').each(function() {
+                    this.checked = checkedStatus;
+                });
+                // e.stopPropagation();
+            });
        }
     });
 });
 
 $('#createReportBtn').on('click', function() {
-    loadingElement.show();
+    // 학생 이름 검사
+    var studentName = $('#studentNameSearch').val().trim();
+    if (!studentName) {
+        alert('학생의 이름을 입력해 주세요.');
+        return; // 함수 실행 중단
+    }
     var selectedRowsData = [];
     $('#lessonTable tbody input[type="checkbox"]:checked').each(function() {
         var row = $(this).closest('tr');
         var rowData = table.row(row).data();
         selectedRowsData.push(rowData);
     });
-    
-    // send the selectedRowsData to your endpoint using AJAX or other methods
-    console.log(selectedRowsData); // for testing purposes only
+    // 체크박스에 체크된 행이 없을 경우
+    if (selectedRowsData.length === 0) {
+        alert('체크된 내역이 없습니다. 레포트를 생성하려면 최소 하나 이상의 항목을 체크하세요.');
+        return; // 함수 실행 중단
+    }
+    loadingElement.show();
+    // loadingElement.show();  // 체크박스 체크 여부 확인 후에 실행
+
     // Get the dates from the datepickers
     var startDate = $("#startDatePicker").val();
     var endDate = $("#endDatePicker").val();
