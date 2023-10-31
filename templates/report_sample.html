@@ -53,6 +53,7 @@
     background-color: #f7f7f7;
     border: 1px dashed #ccc;
     cursor: text;
+    
 }
 </style>
   </head>
@@ -90,14 +91,18 @@
         {% for cell in row %}
         {# Add a new cell to the current table row #}
         {# Only add cells excluding the first one (student name) and only if index is less than 6 #}
+        
+        {# Replace newline characters with <br> tags in the cell value #}
+        {% set formatted_cell = cell|replace('\n', '<br>') %}
+        
         {% if loop.index0 != 1 and loop.index0 <= 3 %}
-        <td {% if loop.index0 == 0 %}class="text-center extra-small-font"{% else %}class="text-center"{% endif %}>{{cell ~ ''}}</td> 
+            <td {% if loop.index0 == 0 %}class="text-center extra-small-font"{% else %}class="text-center"{% endif %}>{{ formatted_cell }}</td>
         {% endif %}
         {% if loop.index0 != 1 and loop.index0 == 5 %}
-            <td>{{cell ~ ''}}</td> 
+            <td>{{ formatted_cell | safe }}</td>
         {% endif %}
-
-        {% endfor %}
+    
+    {% endfor %}
     </tr>
 
   {% endfor %}
@@ -112,7 +117,7 @@
       <!-- Assuming the 7th item in each row is the teacher's feedback -->
       {% if loop.index0 < 6 %}
           <p class="mb-2">
-              <strong>{{ row[0] }}:</strong> {{ row[6] }}
+              <strong>{{ row[0] }}:</strong> {{ row[6]|replace('\n', '<br>')|safe }}
           </p>
       {% endif %}
   {% endfor %}
