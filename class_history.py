@@ -514,14 +514,15 @@ def lesson_update_move(lessonId):
 @app.route('/api/add_lessons', methods=['POST'])
 def add_lesson():
     # Get data from the form
+    date_time  = request.form.get('date_time')
     subject_detail_id = request.form.get('subject_detail_id')
     lesson_detail = request.form.get('lesson_detail')
     teach_comment = request.form.get('teach_comment')
     etc = request.form.get('etc')
 
     # Get the current server time
-    date = datetime.now()
-
+    # date = datetime.now()
+    date = date_time
     # Create a new lesson object and add it to the database
     lesson = Lesson(subject_detail_id=subject_detail_id, date=date, 
                     lesson_detail=lesson_detail, teach_comment=teach_comment,
@@ -838,5 +839,5 @@ app.config['SQLALCHEMY_ECHO'] = True  # Enable SQL query logging
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5050)
+    app.run('0.0.0.0', port=5050,debug=True)
 

@@ -128,6 +128,15 @@ $(document).ready(function() {
   // Handle form submission
   document.querySelector('#lessonForm')
           .addEventListener("submit", function(e) {
+            var lessonDate  = $("#lessonDatePicker").val().trim();
+            // 2. Get the current time
+            var currentTime = new Date();
+            var hours = String(currentTime.getHours()).padStart(2, '0');
+            var minutes = String(currentTime.getMinutes()).padStart(2, '0');
+            var seconds = String(currentTime.getSeconds()).padStart(2, '0');
+
+            // 3. Combine the date and time
+            var combinedDateTime = `${lessonDate} ${hours}:${minutes}:${seconds}`;
             var studentInputValue = $("#studentId").val().trim();
             var subjectDetailInputValue = $("#subjectDetailId").val().trim();
             if (!isValidOption(studentInputValue, 'students') || !isValidOption(subjectDetailInputValue, 'subjects')) { 
@@ -137,6 +146,7 @@ $(document).ready(function() {
             }
             e.preventDefault();
             let formData = new FormData(this);
+            formData.set("date_time", combinedDateTime);
             formData.set("student_id", $(`#students option[value='${$('#studentId').val()}']`).data("id"));
             formData.set("subject_detail_id", $(`#subjects option[value='${$('#subjectDetailId').val()}']`).data("id"));
 

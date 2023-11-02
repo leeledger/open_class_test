@@ -41,7 +41,9 @@
         display: block; /* Ensure the div is displayed */
     }
 
-  </style>     
+  </style>    
+  <!-- Bootstrap Datepicker CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"> 
 </head>
 <body>
     <div class="container-fluid">
@@ -83,13 +85,17 @@
     <form id="lessonForm" method="POST">
         <div class="form-group">
           <div style="display: flex;">
-              <div style="flex: 3;">
+              <div style="flex: 2;">
+                <label for= "lessonDatePicker">수업일자</label>
+                <input type= "text" class= "form-control datepicker-input" id= "lessonDatePicker">
+              </div>
+              <div style="flex: 2;">
                   <label for='studentId'>학생:</label>
                   <input list='students' id='studentId' name='student_id' class='form-control'>
                   <datalist id='students'></datalist>
                   학년: <span id='gradeLevel'></span><br/>
               </div>
-              <div style="flex: 7;">
+              <div style="flex: 6;">
                   <label for='subjectDetailId'>상세 과정:</label>
                   <input list='subjects' id='subjectDetailId' name='subject_detail_id' class='form-control'>
                   <datalist id='subjects'></datalist>
@@ -119,5 +125,42 @@
 
 <!-- Custom JavaScript -->
 <script src="/static/lesson.js"></script>
+
+<!-- DatetimePicker -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ko.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+      // 시작일자와 종료일자를 선택할 수 있는 date time picker 초기화
+      var lessonDatePicker = $('#lessonDatePicker').datepicker({
+        format: 'yyyy-mm-dd', // 날짜 형식 설정
+        autoclose: true, // 선택 시 자동으로 닫힘 
+        todayHighlight: true, // 오늘 날짜 강조 표시 
+        startDate: '2000-01-01', // 시작 가능한 최소 날짜
+        endDate: new Date(), // 종료 가능한 최대 날짜
+        language: 'ko' // 한국어로 설정 (language 사용)
+      }).on('show', function(e) {
+          var datePicker = $(this).data('datepicker');
+          var tableBody = datePicker.picker.find('.datepicker-days tbody');
+  
+          tableBody.on('mouseenter', 'td.day:not(.disabled)', function() {
+              $(this).addClass('hover');
+          });
+  
+          tableBody.on('mouseleave', 'td.day:not(.disabled)', function() {
+              $(this).removeClass('hover');
+          });
+      });
+    // 종료일자에 현재 일자 설정
+    var currentDate = moment().format('YYYY-MM-DD');
+    
+    lessonDatePicker.datepicker("setDate", currentDate);
+
+     $('#lessonDatePicker').val(currentDate);
+    });
+</script>
 
 </body></html>
