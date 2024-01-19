@@ -61,9 +61,14 @@ $(document).ready(function() {
           case 12:
               gradeText = "고3";
               break  
-          // ... 중1, 중2, ... 고1, 고2 등등 나머지 학년에 대한 코드를 여기에 추가하세요.
+          case 13:
+              gradeText = "6세";
+              break  
+          case 14:
+              gradeText = "7세";
+              break  
           default:
-              gradeText = "";
+               gradeText = "";
       }
       $('#gradeLevel').text(gradeText);
       });

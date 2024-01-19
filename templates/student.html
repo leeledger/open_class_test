@@ -85,20 +85,24 @@
        <label for= "grade-level">학년:</label>
        <select id= "grade-level"name= "grade-level"class='form-control'>
          <!-- 현재 학년 선택 -->
-         {% for grade in range(1, 13) %}
+         {% for grade in range(1, 15) %}
          {% if grade == (student.grade_level if student else None) %}
              <!-- 현재 학년이면 selected 추가 -->
              <option value="{{ grade }}" selected>
-                 {% if grade <= 6 %}초{{ grade }}
-                 {% elif grade <= 9 %}중{{ grade - 6 }}
-                 {% else %}고{{ grade - 9 }}{% endif %}
-             </option> 
+                {% if grade <= 6 %}초{{ grade }}
+                {% elif grade <= 9 %}중{{grade - 6}}
+                {% elif grade >= 10 and grade <=12 %}고{{grade - 9}}
+                {% elif grade == 13 %}{{grade - 7}}세
+                {% else %}7세{% endif %}
+          </option> 
          {% else %}
              <!-- 아니면 그냥 출력 -->
              <option value="{{ grade }}">
                  {% if grade <= 6 %}초{{ grade }}
                  {% elif grade <= 9 %}중{{grade - 6}}
-                 {% else %}고{{grade - 9}}{% endif %}
+                 {% elif grade >= 10 and grade <=12 %}고{{grade - 9}}
+                 {% elif grade == 13 %}{{grade - 7}}세
+                 {% else %}7세{% endif %}
              </option> 
          {% endif %}
      {% endfor %}

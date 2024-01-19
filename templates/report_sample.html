@@ -65,11 +65,18 @@
           <h1>Period Class contents</h1>
           <!-- Assuming the 2nd item in the first row is the name -->
           <div class="card mt-4">
-              <div class="card-body">
-                  <h3 class="card-title">이름: {{ data[0][1] }}</h3>
-                  <p class="card-text">수강기간: {{ startDate }} ~ {{ endDate }}</p>
-              </div>
-          </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="card-title">이름: {{ data[0][1] }}</h3>
+                        <p class="card-text">수강기간: {{ startDate }} ~ {{ endDate }}</p>
+                    </div>
+                    <div>
+                        <p class="card-text font-weight-bold">담당교사: {{ data[0][5] }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
        <table class="table table-striped table-hover table-bordered mt-4">
 
@@ -86,7 +93,7 @@
       <!-- Start of the data rows -->
       {% for row in data %}
       <!-- New row for each piece of data-->
-      <tr>
+      <tr contenteditable="true">
         <!-- Create a new cell for each piece of data-->
         {% for cell in row %}
         {# Add a new cell to the current table row #}
@@ -98,8 +105,8 @@
         {% if loop.index0 != 1 and loop.index0 <= 3 %}
             <td {% if loop.index0 == 0 %}class="text-center extra-small-font"{% else %}class="text-center"{% endif %}>{{ formatted_cell }}</td>
         {% endif %}
-        {% if loop.index0 != 1 and loop.index0 == 5 %}
-            <td>{{ formatted_cell | safe }}</td>
+        {% if loop.index0 != 1 and loop.index0 == 6 %}  <!-- 수업내용 -->
+            <td contenteditable="true">{{ formatted_cell | safe }}</td>
         {% endif %}
     
     {% endfor %}
@@ -115,11 +122,11 @@
   <div class="editable-text">
   {% for row in data %}
       <!-- Assuming the 7th item in each row is the teacher's feedback -->
-      {% if loop.index0 < 6 %}
-          <p class="mb-2">
-              <strong>{{ row[0] }}:</strong> {{ row[6]|replace('\n', '<br>')|safe }}
-          </p>
-      {% endif %}
+
+        <p class="mb-2">
+            <strong>{{ row[0] }}:</strong> {{ row[7]|replace('\n', '<br>')|safe }} 
+        </p>
+
   {% endfor %}
       </div>
 </div>
@@ -151,7 +158,7 @@
 
   <br>
   <div style='text-align:center;margin-top:-30px;' >
-    <h4>로봇앤코딩학원</h4>
+    <h4>새로움코딩학원</h4>
     <h5>발급일자 : 현재일자</h5>
   </div>
  <script type='text/javascript'>

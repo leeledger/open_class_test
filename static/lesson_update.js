@@ -6,6 +6,8 @@ function submitForm(mode) {
     var lesson_detail = document.getElementById("lesson_detail").value;
     var teach_comment = document.getElementById("teach_comment").value;
     var etc = document.getElementById("etc").value;
+    var teach_id = document.getElementById("teach_id").value;
+    var lesson_date = document.getElementById("lessonDatePicker").value;
 
     var selectedOption = subjectDetailId.options[subjectDetailId.selectedIndex];
     var subjectDetailIdValue = selectedOption.value;
@@ -17,7 +19,9 @@ function submitForm(mode) {
             'lesson_detail': lesson_detail,
             'teach_comment': teach_comment,
             'etc': etc,
-            'subject_detail_id': subjectDetailIdValue  // 수정
+            'subject_detail_id': subjectDetailIdValue,  // 수정
+            'teach_id': teach_id,  // And this line
+            'lesson_date':lesson_date
         };
 
         fetch('/lesson-update/' + lessonId, {

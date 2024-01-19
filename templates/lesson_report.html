@@ -112,17 +112,27 @@
             <label for= "endDatePicker">종료일자</label>
             <input type= "text" class= "form-control datepicker-input" id= "endDatePicker">
           </div>
-
+          <div class="col-md-2 mb-3">
+            <label for="teach_id">담당교사</label>
+            <select class="form-control" id="teach_id">
+                <option value="all">모두</option> <!-- Assuming 'a' stands for Teacher Kim -->
+                <option value="김선희">김선희</option> <!-- Assuming 'a' stands for Teacher Kim -->
+                <option value="이용훈">이용훈</option> <!-- Assuming 'b' stands for Teacher Lee -->
+                <option value="우창기">우창기</option> <!-- Assuming 'c' stands for Teacher Park -->
+                <option value="정미숙">정미숙</option> <!-- Assuming 'd' stands for Teacher Choi -->
+                <option value="조혜진">조혜진</option> <!-- Assuming 'e' stands for Teacher Jung -->
+            </select>
+          </div>
           <!-- Student Name Search Field -->
           <div class="col-md-2 mb-3">
             <label for="studentNameSearch">학생 이름</label>
             <input type="text" id="studentNameSearch" class="form-control" placeholder="학생 이름 검색...">
           </div>
-          <div class="col-md-3 mb-3">
+          <div class="col-md-2 mb-3">
             <label for="lessonSearch">과정 </label>
             <input type="text" id ="lessonSearch"  class ="form-control" placeholder ="과정명 검색...">
            </div>
-          <div class="col-md-3 mb-3">
+          <div class="col-md-2 mb-3">
             <label for="lessonDetailSearch">과정 상세명</label>
             <input type="text" id ="lessonDetailSearch"  class ="form-control" placeholder ="과정 상세명 검색...">
            </div>
@@ -135,7 +145,8 @@
               <th  class="text-center">이름</th>
               <th  class="text-center">과정</th>
               <th  class="text-center">과정 상세</th>
-              <th  class="text-center">단계</th>
+              <th  class="text-center">레벨</th>
+              <th class="text-center">담당교사</th>
               <th  class="text-center">수업내용</td>
               <th  class="text-center">교사지도사항</td>
             </tr>

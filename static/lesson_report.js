@@ -20,7 +20,8 @@ $(document).ready(function() {
                     start: d.start,
                     length: d.length,
                     startDate: $('#startDatePicker').val(),  // Add this line
-                    endDate: $('#endDatePicker').val(),  // And this line                    
+                    endDate: $('#endDatePicker').val(),  // And this line   
+                    teachId: $('#teach_id').val(),  // And this line                 
                 });
             },
         },
@@ -30,9 +31,10 @@ $(document).ready(function() {
             { "data": 1 }, // 학생이름
             { "data": 2 }, // 대분류 과목명
             { "data": 3 }, // 과정 상세명 (링크 추가)
-            { "data": 4 }, // 단계
-            { "data": 5 }, // 수업 내용
-            { "data": 6 }, // 교사지도사항 
+            { "data": 4 }, // 레벨
+            { "data": 5 }, // 담당교사
+            { "data": 6 }, // 수업 내용
+            { "data": 7 }, // 교사지도사항 
 
         ],
         

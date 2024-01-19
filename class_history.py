@@ -11,8 +11,11 @@ import platform
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@127.0.0.1:3306/class_history'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://luxual:!Dltndk12512@robotncoding.synology.me:3306/class_history'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin@force11.iptime.org:3308/class_history'
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://khailee:Lee040510~@172.30.1.18:3306/class_history'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://khailee:Lee040510~@khailee0405.synology.me:3306/class_history'
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = '12345'
 app.config['UPLOAD_FOLDER'] = 'photos'  # Flask 서버의 photos 폴더
@@ -28,6 +31,9 @@ class User(UserMixin):
 users = {
     'user1': User('user1'),
     'user2': User('user2'),
+    'user3': User('user3'),
+    'user4': User('user4'),
+    'user5': User('user5'),
 }
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -45,7 +51,11 @@ def login():
 @login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
-
+@app.route('/end_session', methods=['POST'])
+def end_session():
+    # 세션 종료
+    session.clear()
+    return jsonify({'redirect': url_for('login')})
 @app.route('/')
 def start():
     if current_user.is_authenticated:  # 이미 로그인한 사용자인 경우
@@ -120,6 +130,7 @@ class Lesson(db.Model):
     lesson_detail = db.Column(db.Text)
     teach_comment=db.Column(db.Text)
     etc=db.Column(db.Text)
+    teach_id = db.Column(db.Text)
     # student_id = db.Column(db.Integer, db.ForeignKey('attendance.student_id'))
     attendances=db.relationship("Attendance",back_populates="lesson")
     # subject=db.relationship("Subject",back_populates="lessons")
@@ -180,7 +191,7 @@ def api_lessons():
     student_name = data.get('studentName')
     lesson_name = data.get('lesson')
     lesson_detail_name = data.get('subjectDetail')
-    
+    teach_id = data.get('teachId')
     start_date_str = data.get('startDate')  
     end_date_str = data.get('endDate')  
     start_date_obj = datetime.strptime(start_date_str + "T00:00:00", '%Y-%m-%dT%H:%M:%S') if start_date_str else None
@@ -194,6 +205,7 @@ def api_lessons():
        Subject.name.label("subject_name"),
        SubjectDetail.detail_script,
        SubjectDetail.level,
+       Lesson.teach_id,
        Lesson.lesson_detail,
        Lesson.teach_comment,
        Lesson.lesson_id,
@@ -215,7 +227,8 @@ def api_lessons():
             query = query.filter(SubjectDetail.detail_script.ilike(f'%{lesson_detail_name}%'))
     if start_date_obj and end_date_obj:
         query=query.filter(Lesson.date.between(start_date_obj,end_date_obj))
-
+    if teach_id != 'all':
+        query=query.filter(Lesson.teach_id==teach_id)
     try:
         records_total = query.count()
     except Exception as e:
@@ -232,6 +245,7 @@ def api_lessons():
                                 lesson.subject_name, 
                                 lesson.detail_script, 
                                 lesson.level if lesson.level else '', 
+                                lesson.teach_id if lesson.teach_id else '', 
                                 lesson.lesson_detail if lesson.lesson_detail else '', 
                                 lesson.teach_comment if lesson.teach_comment else '',
                                 lesson.lesson_id] )
@@ -494,10 +508,13 @@ def subject_detail_update(subject_detail_id):
 @app.route('/lesson_update_move/<int:lessonId>') # 수정 부분
 @login_required
 def lesson_update_move(lessonId):
-    lesson_detail = Lesson.query.get(lessonId)
+    lesson_detail = Lesson.query.get(lessonId) 
+    # lesson_date = Lesson.date
+    lesson_date = lesson_detail.date.strftime('%Y-%m-%d')
     subject_detail = SubjectDetail.query.all()
     attendance = Attendance.query.filter_by(lesson_id=lessonId).first()
     subject_name = Subject.name
+    teach_id = current_user.id
     if not attendance:
         return "Attendance not found", 404
     student = Student.query.get(attendance.student_id)
@@ -508,7 +525,7 @@ def lesson_update_move(lessonId):
     if not lesson_detail:
         return "SubjectDetail not found", 404  # 적절한 에러 메시지와 함께 404 상태 코드 반환
     
-    return render_template('lesson_update.html', lesson_detail=lesson_detail, subject_detail=subject_detail, student_name=student.name, subject_name = subject_name) #정상작동
+    return render_template('lesson_update.html', lesson_date = lesson_date , lesson_detail=lesson_detail, subject_detail=subject_detail, student_name=student.name, subject_name = subject_name,teach_id = teach_id) #정상작동
     
 
 @app.route('/api/add_lessons', methods=['POST'])
@@ -519,6 +536,8 @@ def add_lesson():
     lesson_detail = request.form.get('lesson_detail')
     teach_comment = request.form.get('teach_comment')
     etc = request.form.get('etc')
+    # teach_id 변수에 현재 세션에 로그인된 사용자의 id를 저장
+    teach_id = current_user.id
 
     # Get the current server time
     # date = datetime.now()
@@ -526,7 +545,7 @@ def add_lesson():
     # Create a new lesson object and add it to the database
     lesson = Lesson(subject_detail_id=subject_detail_id, date=date, 
                     lesson_detail=lesson_detail, teach_comment=teach_comment,
-                    etc=etc)
+                    etc=etc,teach_id=teach_id)
     
     db.session.add(lesson)
     db.session.commit()
@@ -665,6 +684,8 @@ def lesson_update(lessonId):
         lesson.lesson_detail = data['lesson_detail']
         lesson.teach_comment = data['teach_comment']
         lesson.etc = data['etc']
+        lesson.teach_id = data['teach_id']
+        lesson.date = data['lesson_date']
         print(data)
         # 변경 사항 커밋
         db.session.commit()
@@ -765,9 +786,9 @@ def report_sample():
     # photo_directory = r"\\192.168.0.225\학원공유"  # 파일 경로 설정 윈도우 기준
     # photo_directory = '/volume1/학원공유'  # 리눅스 환경
     if platform.system() == 'Windows':
-        photo_directory = r"\\192.168.0.225\학원공유"  # 윈도우 환경의 파일 경로
+        photo_directory = r"\\192.168.0.225\\open_class"  # 윈도우 환경의 파일 경로
     else:
-        photo_directory = '/volume1/학원공유'  # 리눅스 환경의 파일 경로
+        photo_directory = '/volume1/NAS1/open_class'  # 리눅스 환경의 파일 경로
     filtered_photos = []
 
     for row_data in selectedRowsData:
@@ -792,8 +813,8 @@ def report_sample():
                     filtered_photos.append(filename)  # 복사된 파일명 추가
                     
                     count += 1
-                    if count >= 12:  # 최대 사진 개수인 6개까지만 가져옵니다.
-                        break
+                    # if count >= 12 :  # 최대 사진 개수인 12개까지만 가져옵니다.
+                    #     break
 
     return render_template('report_sample.html', data=selectedRowsData,
                            startDate=start_date,

@@ -99,7 +99,9 @@
           
           <td>    {% if student.grade_level <= 6 %}초{{ student.grade_level }}
             {% elif student.grade_level <= 9 %}중{{student.grade_level - 6}}
-            {% else %}고{{student.grade_level - 9}}{% endif %}</td> 
+            {% elif student.grade_level <= 12 %}고{{student.grade_level - 9}}
+            {% elif student.grade_level <= 13 %}{{student.grade_level - 7}}세
+            {% else %}7세{% endif %}</td> 
         </tr>
 
       {% endfor %}
